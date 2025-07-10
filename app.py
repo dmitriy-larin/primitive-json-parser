@@ -1,6 +1,10 @@
 def parseString(js: str, ix: int):
     res = ""
-    while js[ix] != '"':
+    while True:
+        if ix >= len(js):
+            raise Exception("The json string finished prematurely")
+        if js[ix] == '"':
+            break
         res += js[ix]
         ix += 1
     return res, ix + 1
@@ -15,8 +19,14 @@ def parseKey(js: str, ix: int):
 
 def parseList(js: str, ix: int):
     res = []
-    while js[ix] != "]":
+    while True:
+        if ix >= len(js):
+            raise Exception("The json string finished prematurely")
+        if js[ix] == "]":
+            break
         item, ix = parseValue(js, ix)
+        if ix >= len(js):
+            raise Exception("The json string finished prematurely")
         res.append(item)
         if js[ix] == ",":
             ix += 1
@@ -36,10 +46,18 @@ def parseValue(js: str, ix: int):
 
 def parseObject(js: str, ix: int):
     res = {}
-    while js[ix] != "}":
+    while True:
+        if ix >= len(js):
+            raise Exception("The json string finished prematurely")
+        if js[ix] == "}":
+            break
         key, ix = parseKey(js, ix)
+        if ix >= len(js):
+            raise Exception("The json string finished prematurely")
         if js[ix] == ":":
             val, ix = parseValue(js, ix + 1)
+            if ix >= len(js):
+                raise Exception("The json string finished prematurely")
             res[key] = val
             if js[ix] == ",":
                 ix += 1
@@ -52,7 +70,7 @@ def parseObject(js: str, ix: int):
 
 def parseJson(js: str):
     res = {}
-    if js[0] == "{":
+    if len(js) > 0 and js[0] == "{":
         res, ix = parseObject(js, 1)
     else:
         raise Exception("Syntax Error at 0")
@@ -75,8 +93,14 @@ if __name__ == "__main__":
         "{}ecxrtsfdg",
         '{"key1":"value1","list1":["listvalue1",{"listkey1":"listvalue2"},["list2value1","list2value2"],"listvalue3"]}',
         '{"key1":"value1","key2":{"key3":"value2"},"key4":"value3"}',
+        '{"key1":"value1","key2":{"key3":"va',
+        '{"key1":"value1","key2":{"key3":"value2"},"key4":"value3"',
+        '{"key1":"value1","list1":["listvalue1",{"listkey1":"listvalue2"},["list2value1","list2value2"],"listvalue3"',
     ]
 
     for ts in tests:
         print("Testing", ts)
-        print(parseJson(ts))
+        try:
+            print(parseJson(ts))
+        except Exception as e:
+            print("Error:", e)
