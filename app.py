@@ -96,11 +96,14 @@ if __name__ == "__main__":
         '{"key1":"value1","key2":{"key3":"va',
         '{"key1":"value1","key2":{"key3":"value2"},"key4":"value3"',
         '{"key1":"value1","list1":["listvalue1",{"listkey1":"listvalue2"},["list2value1","list2value2"],"listvalue3"',
+        '{"key1":"value1",a"key2":"value2"}',
+        '{"key1":"value1","list1":[',
+        '{"key1":"value1","key2":{',
     ]
 
     for ts in tests:
-        print("Testing", ts)
+        print("Input:", ts)
         try:
-            print(parseJson(ts))
+            print("Output:", parseJson(ts))
         except Exception as e:
             print("Error:", e)
